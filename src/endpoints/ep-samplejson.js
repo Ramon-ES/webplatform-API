@@ -32,7 +32,7 @@ const sampleJSON = {
 router.get('/testJSON', async (req, res) => {
     try {
         const result = await TestJSON.find();
-        res.send(({ "data": result }));
+        res.send(result[0]);
     } catch (e) {
         res.status(500).json({ error: e.message })
     }
