@@ -6,7 +6,7 @@ const TestJSON = require('../models/testJSON');
 // store sampleJSON
 const sampleJSON = {
     "speakers": [
-        { "name": "Sara", "role": "leader", "voice": "voicemodel-female" },
+        { "name": "Sarah", "role": "leader", "voice": "voicemodel-female" },
         { "name": "David", "role": "target", "voice": "voicemodel-male" },
         { "name": "James", "role": "support", "voice": "voicemodel-male" }
     ],
