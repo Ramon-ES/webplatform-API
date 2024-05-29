@@ -1,8 +1,6 @@
 const mongoose = require('mongoose');
 
 const clientSchema = new mongoose.Schema({
-    clients: [
-        {
             clientName: {
                 type: String,
                 required: true
@@ -150,10 +148,7 @@ const clientSchema = new mongoose.Schema({
                         ]
                     }
                 }
-            ]
-        }
-    ]
-
+            ],
 });
 
 module.exports = mongoose.model('Client', clientSchema);
