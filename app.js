@@ -115,8 +115,8 @@ app.patch('/data/settings/:id', async (req, res) => {
     req.body._id = orderId;
     try {
         const result = await Client.findOneAndUpdate(
-            { 'settings._id': orderId },
-            { $set: { 'settings.$': req.body } },
+            { 'settings._id': orderId }, // get client which has settings object with this id
+            { $set: { 'settings.$': req.body } }, // go in settings object and replace $ with req.body
             { new: true }
         );
         console.log(result);
