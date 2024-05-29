@@ -148,7 +148,7 @@ app.post('/data', async (req, res) => {
     const client = new Client(req.body);
     try {
         await client.save();
-        res.status(201).json({ customer });
+        res.status(201).json({ client });
     } catch (e) {
         res.status(400).json({ error: e.message });
     }
