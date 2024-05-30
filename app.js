@@ -49,8 +49,37 @@ app.get('/data', async (req, res) => {
     }
 });
 
-// finding entry by its id
-app.get('/data/:id', async (req, res) => {
+// POST endpoint to add a new client
+app.post('/clients', async (req, res) => {
+    try {
+        const newClientData = req.body;
+
+        // Create a new client instance
+        const newClient = new Client(newClientData);
+
+        // Save the new client to the database
+        await newClient.save();
+
+        res.status(201).json(newClient); // Respond with the created client and a 201 status code
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// retrieve list of all clients with their id from database
+app.get('/clientList', async (req, res) => {
+    try {
+        const result = await Client.find({}, { clientName: 1 });
+
+        res.send(({ "data": result }));
+    } catch (e) {
+        res.status(500).json({ error: e.message })
+    }
+});
+
+
+// get list of scenarios from client id
+app.get('/scenarioList/:id', async (req, res) => {
     console.log({
         requestParams: req.params,
         requestQuery: req.query
@@ -58,17 +87,117 @@ app.get('/data/:id', async (req, res) => {
     try {
         const { id: clientId } = req.params;
         console.log(clientId);
-        const client = await Client.findById(clientId);
+        const client = await Client.findById(clientId, {
+            '_id': 0,  // Exclude the client _id
+            'scenarios.scenarioTitle': 1,
+            'scenarios.scenarioDescription': 1,
+            'scenarios._id': 1
+        });
         console.log(client);
         if (!client) {
             res.status(404).json({ error: 'user not found' });
         } else {
-            res.json({ client });
+            res.json(client.scenarios);
         }
     } catch (e) {
-        res.status(500).json({ error: 'something went wrong' });
+        res.status(500).json({ error: e.message });
     }
 });
+
+// get settings of specific scenario by its id
+// app.get('/scenario/:id', async (req, res) => {
+//     console.log({
+//         requestParams: req.params,
+//         requestQuery: req.query
+//     });
+//     try {
+//         const { id: scenarioId } = req.params;
+//         const id = req.params;
+//         console.log(scenarioId);
+//         // const client = await Client.findById(scenarioId, { 'scenarios.scenarioTitle': 1, 'scenarios.scenarioDescription': 1, 'scenarios._id': 1 });
+//         const client = await Client.findOne({'scenarios._id': scenarioId}, {'_id':0,'scenarios.scenarioTitle': 1, 'scenarios.scenarioDescription': 1, 'scenarios.settings': 1,'scenarios._id': 1 });
+ 
+//         console.log(client);
+//         if (!client) {
+//             res.status(404).json({ error: 'scenario not found' });
+//         } else {
+//             res.json({ client });
+//         }
+//     } catch (e) {
+//         res.status(500).json({ error: e.message });
+//     }
+// });
+
+app.get('/scenario/:id', async (req, res) => {
+    console.log({
+        requestParams: req.params,
+        requestQuery: req.query
+    });
+    try {
+        const { id: scenarioId } = req.params;
+        console.log(scenarioId);
+        
+        const client = await Client.findOne({'scenarios._id': scenarioId}, {
+            '_id': 0,
+            'scenarios': {
+                $elemMatch: { _id: scenarioId }
+            }
+        });
+        
+        console.log(client);
+
+        if (!client || !client.scenarios || client.scenarios.length === 0) {
+            res.status(404).json({ error: 'scenario not found' });
+        } else {
+            res.json(client.scenarios[0]);
+        }
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// Update a specific scenario
+app.put('/scenario/:id', async (req, res) => {
+    try {
+        const { id:scenarioId } = req.params;
+        const newData = req.body;
+
+        const client = await Client.findOneAndUpdate(
+            { 'scenarios._id': scenarioId },
+            { $set: { 'scenarios.$': newData } },
+            { new: true }
+        );
+
+        if (!client) {
+            return res.status(404).json({ error: 'Scenario not found' });
+        }
+
+        res.json(client.scenarios[0]);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// // finding entry by its id
+// app.get('/data/:id', async (req, res) => {
+//     console.log({
+//         requestParams: req.params,
+//         requestQuery: req.query
+//     });
+//     try {
+//         const { id: clientId } = req.params;
+//         console.log(clientId);
+//         const client = await Client.findById(clientId);
+//         console.log(client);
+//         if (!client) {
+//             res.status(404).json({ error: 'user not found' });
+//         } else {
+//             res.json({ client });
+//         }
+//     } catch (e) {
+//         res.status(500).json({ error: 'something went wrong' });
+//     }
+// });
 
 // calling and replace whole inner object with the request
 // app.put('/data/:id', async (req, res) => {
