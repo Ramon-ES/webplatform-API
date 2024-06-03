@@ -90,6 +90,24 @@ const clientSchema = new mongoose.Schema({
                                 required: true
                             }
                         },
+                        supportProfile: {
+                            name: {
+                                type: String,
+                                required: true
+                            },
+                            role: {
+                                type: String,
+                                required: true
+                            },
+                            age: {
+                                type: Number,
+                                required: true
+                            },
+                            yearsExperience: {
+                                type: Number,
+                                required: true
+                            }
+                        },
                         conversationContext: {
                             companyContext: {
                                 type: String,
@@ -123,6 +141,24 @@ const clientSchema = new mongoose.Schema({
                             },
                             fourGDesired: {
                                 type: String,
+                                required: true
+                            }
+                        },
+                        leaderProfile: {
+                            name: {
+                                type: String,
+                                required: true
+                            },
+                            role: {
+                                type: String,
+                                required: true
+                            },
+                            age: {
+                                type: Number,
+                                required: true
+                            },
+                            yearsExperience: {
+                                type: Number,
                                 required: true
                             }
                         },
