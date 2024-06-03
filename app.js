@@ -103,11 +103,14 @@ app.post('/scenarioAdd/:id', async (req, res) => {
 });
 
 // remove scenario
-app.delete('/scenarioRemove/:id', async (req, res) => {
+app.delete('/scenarioRemove/:clientId/:scenarioId', async (req, res) => {
     try {
-        const clientId = req.params.id;
-        const result = await client.deleteOne({ _id: clientId });
-        res.json({ deletedCount: result.deletedCount });
+        const { clientId, scenarioId } = req.params;
+        const result = await Client.updateOne(
+            { _id: clientId },
+            { $pull: { scenarios: { _id: scenarioId } } }
+        );
+        res.json({ modifiedCount: result.nModified });
     } catch (e) {
         res.status(500).json({ error: 'something went wrong' });
     }
