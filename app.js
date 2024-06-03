@@ -102,6 +102,17 @@ app.post('/scenarioAdd/:id', async (req, res) => {
     }
 });
 
+// remove scenario
+app.delete('scenarioDelete/:id', async (req, res) => {
+    try {
+        const clientId = req.params.id;
+        const result = await client.deleteOne({ _id: clientId });
+        res.json({ deletedCount: result.deletedCount });
+    } catch (e) {
+        res.status(500).json({ error: 'something went wrong' });
+    }
+});
+
 // get list of scenarios from client id
 app.get('/scenarioList/:id', async (req, res) => {
     console.log({
@@ -140,7 +151,7 @@ app.get('/scenarioList/:id', async (req, res) => {
 //         console.log(scenarioId);
 //         // const client = await Client.findById(scenarioId, { 'scenarios.scenarioTitle': 1, 'scenarios.scenarioDescription': 1, 'scenarios._id': 1 });
 //         const client = await Client.findOne({'scenarios._id': scenarioId}, {'_id':0,'scenarios.scenarioTitle': 1, 'scenarios.scenarioDescription': 1, 'scenarios.settings': 1,'scenarios._id': 1 });
- 
+
 //         console.log(client);
 //         if (!client) {
 //             res.status(404).json({ error: 'scenario not found' });
@@ -160,14 +171,14 @@ app.get('/scenario/:id', async (req, res) => {
     try {
         const { id: scenarioId } = req.params;
         console.log(scenarioId);
-        
-        const client = await Client.findOne({'scenarios._id': scenarioId}, {
+
+        const client = await Client.findOne({ 'scenarios._id': scenarioId }, {
             '_id': 0,
             'scenarios': {
                 $elemMatch: { _id: scenarioId }
             }
         });
-        
+
         console.log(client);
 
         if (!client || !client.scenarios || client.scenarios.length === 0) {
@@ -183,7 +194,7 @@ app.get('/scenario/:id', async (req, res) => {
 // Update a specific scenario
 app.put('/scenario/:id', async (req, res) => {
     try {
-        const { id:scenarioId } = req.params;
+        const { id: scenarioId } = req.params;
         const newData = req.body;
 
         const client = await Client.findOneAndUpdate(
@@ -203,16 +214,6 @@ app.put('/scenario/:id', async (req, res) => {
 });
 
 
-// remove scenario
-app.delete('removeScenario/:id', async (req, res) => {
-    try {
-        const clientId = req.params.id;
-        const result = await client.deleteOne({ _id: clientId });
-        res.json({ deletedCount: result.deletedCount });
-    } catch (e) {
-        res.status(500).json({ error: 'something went wrong' });
-    }
-});
 
 // // finding entry by its id
 // app.get('/data/:id', async (req, res) => {
