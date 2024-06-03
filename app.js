@@ -78,6 +78,30 @@ app.get('/clientList', async (req, res) => {
 });
 
 
+
+// POST endpoint to add a scenario to a specific client
+app.post('/scenarioAdd/:id', async (req, res) => {
+    try {
+        const { id: clientId } = req.params;  // Get client ID from URL parameters
+        const newScenario = req.body;  // Get new scenario data from request body
+
+        // Find the client by ID and push the new scenario into the scenarios array
+        const client = await Client.findByIdAndUpdate(
+            clientId,
+            { $push: { scenarios: newScenario } },
+            { new: true, useFindAndModify: false }
+        );
+
+        if (!client) {
+            res.status(404).json({ error: 'Client not found' });
+        } else {
+            res.status(201).json(client.scenarios);  // Respond with the updated scenarios array
+        }
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 // get list of scenarios from client id
 app.get('/scenarioList/:id', async (req, res) => {
     console.log({
@@ -175,6 +199,18 @@ app.put('/scenario/:id', async (req, res) => {
         res.json(client.scenarios[0]);
     } catch (e) {
         res.status(500).json({ error: e.message });
+    }
+});
+
+
+// remove scenario
+app.delete('removeScenario/:id', async (req, res) => {
+    try {
+        const clientId = req.params.id;
+        const result = await client.deleteOne({ _id: clientId });
+        res.json({ deletedCount: result.deletedCount });
+    } catch (e) {
+        res.status(500).json({ error: 'something went wrong' });
     }
 });
 
