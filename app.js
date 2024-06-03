@@ -103,7 +103,7 @@ app.post('/scenarioAdd/:id', async (req, res) => {
 });
 
 // remove scenario
-app.delete('scenarioRemove/:id', async (req, res) => {
+app.delete('/scenarioRemove/:id', async (req, res) => {
     try {
         const clientId = req.params.id;
         const result = await client.deleteOne({ _id: clientId });
